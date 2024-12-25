@@ -6,7 +6,6 @@ def collect_bets(players):
     total_bet = 0
     for player in players:
         if not player.folded:
-            # 检查当前玩家是否需要下注
             total_bet += player.bet
             print(f"{player.name} 下注了 {player.bet} 筹码。")
     return total_bet
@@ -28,6 +27,7 @@ def handle_betting_round(players, pot, start_index):
     """
     print("\n开始下注轮...")
     current_high_bet = 0  # 当前轮次最高下注金额
+    last_raise_amount = 0  # 记录上一位玩家的加注金额
     player_count = len(players)
     current_index = start_index  # 从指定玩家开始行动
 
@@ -42,8 +42,13 @@ def handle_betting_round(players, pot, start_index):
                     player.bet_chips(current_high_bet - player.bet)
                     print(f"{player.name} 跟注了 {current_high_bet} 筹码。")
                 elif action == "raise":
-                    raise_amount = current_high_bet + 10  # 示例加注金额
+                    # 确保加注金额是前一位加注的倍数
+                    if last_raise_amount > 0:
+                        raise_amount = last_raise_amount * 2
+                    else:
+                        raise_amount = current_high_bet + 10
                     player.bet_chips(raise_amount - player.bet)
+                    last_raise_amount = raise_amount - current_high_bet
                     current_high_bet = raise_amount
                     print(f"{player.name} 加注到 {raise_amount} 筹码。")
                 elif action == "fold":
@@ -59,8 +64,13 @@ def handle_betting_round(players, pot, start_index):
                     player.bet_chips(current_high_bet - player.bet)
                     print(f"{player.name} 跟注了 {current_high_bet} 筹码。")
                 elif action == "2":
-                    raise_amount = int(input("请输入加注金额: "))
+                    if last_raise_amount > 0:
+                        print(f"加注金额必须是 {last_raise_amount} 的倍数。")
+                        raise_amount = int(input(f"请输入加注金额（最少 {last_raise_amount * 2} 筹码）: "))
+                    else:
+                        raise_amount = int(input("请输入加注金额: "))
                     player.bet_chips(raise_amount - player.bet)
+                    last_raise_amount = raise_amount - current_high_bet
                     current_high_bet = raise_amount
                     print(f"{player.name} 加注到 {raise_amount} 筹码。")
                 elif action == "3":
