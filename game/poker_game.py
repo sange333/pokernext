@@ -5,6 +5,7 @@ from game.betting import handle_betting_round, reset_bets
 from game.hand_evaluator import compare_hands
 from game.game_rules import check_winner
 from game.game_state import GameState
+from game.utils import display_cards
 
 
 class PokerGame:
@@ -16,6 +17,34 @@ class PokerGame:
         self.players = [Player("玩家1")] + [AIPlayer(f"AI 玩家 {i+1}") for i in range(5)]
         self.deck = Deck()  # 扑克牌组
         self.state = GameState(self.players)  # 游戏状态管理
+        self.dealer_index = 0  # 庄家的索引
+
+    def rotate_dealer(self):
+        """
+        轮换庄家，每局游戏后将庄家顺时针切换到下一位玩家
+        """
+        self.dealer_index = (self.dealer_index + 1) % len(self.players)
+        print(f"\n本局的庄家是: {self.players[self.dealer_index].name}")
+
+    def setup_blinds(self):
+        """
+        设置小盲和大盲
+        """
+        small_blind_index = (self.dealer_index + 1) % len(self.players)
+        big_blind_index = (self.dealer_index + 2) % len(self.players)
+
+        small_blind_player = self.players[small_blind_index]
+        big_blind_player = self.players[big_blind_index]
+
+        # 小盲下注
+        if small_blind_player.bet_chips(1):
+            print(f"{small_blind_player.name} 强制下注小盲 (1 筹码)")
+        # 大盲下注
+        if big_blind_player.bet_chips(2):
+            print(f"{big_blind_player.name} 强制下注大盲 (2 筹码)")
+
+        # 更新奖池
+        self.state.add_to_pot(3)  # 小盲 1 + 大盲 2 = 3 筹码
 
     def deal_hands(self):
         """
@@ -23,7 +52,9 @@ class PokerGame:
         """
         for player in self.players:
             player.hand = [self.deck.draw_card(), self.deck.draw_card()]
-            print(f"{player.name} 的手牌: {player.hand}")
+            # 只显示人类玩家的手牌
+            if not player.is_ai:
+                print(f"{player.name} 的手牌: {player.hand}")
 
     def deal_community_cards(self, count):
         """
@@ -44,9 +75,11 @@ class PokerGame:
         """
         运行完整的游戏流程
         """
-        print("开始新一局德州扑克游戏！")
+        print("\n开始新一局德州扑克游戏！")
         self.deck.reset_deck()  # 每局洗牌
         self.state.reset()  # 重置游戏状态
+        self.rotate_dealer()  # 设置庄家
+        self.setup_blinds()  # 强制小盲和大盲下注
 
         # 1. 发手牌
         print("\n发手牌...")
