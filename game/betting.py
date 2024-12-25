@@ -26,8 +26,8 @@ def handle_betting_round(players, pot, start_index):
     从指定的起始玩家开始。
     """
     print("\n开始下注轮...")
-    current_high_bet = 0  # 当前轮次最高下注金额
-    last_raise_amount = 0  # 记录上一位玩家的加注金额
+    current_high_bet = 2  # 当前轮次最高下注金额，初始为大盲金额
+    last_raise_amount = 2  # 初始加注金额为大盲金额
     player_count = len(players)
     current_index = start_index  # 从指定玩家开始行动
 
@@ -39,14 +39,12 @@ def handle_betting_round(players, pot, start_index):
                 # 如果是 AI 玩家，调用 AI 的决策逻辑
                 action = player.make_decision(pot, current_high_bet)
                 if action == "call":
-                    player.bet_chips(current_high_bet - player.bet)
+                    call_amount = current_high_bet - player.bet
+                    player.bet_chips(call_amount)
                     print(f"{player.name} 跟注了 {current_high_bet} 筹码。")
                 elif action == "raise":
-                    # 确保加注金额是前一位加注的倍数
-                    if last_raise_amount > 0:
-                        raise_amount = last_raise_amount * 2
-                    else:
-                        raise_amount = current_high_bet + 10
+                    # 确保加注金额是上次加注的整数倍
+                    raise_amount = current_high_bet + last_raise_amount
                     player.bet_chips(raise_amount - player.bet)
                     last_raise_amount = raise_amount - current_high_bet
                     current_high_bet = raise_amount
@@ -61,14 +59,14 @@ def handle_betting_round(players, pot, start_index):
                 print(f"当前底池: {pot} 筹码")
                 action = input(f"请选择操作: [1] 跟注 {current_high_bet} [2] 加注 [3] 弃牌: ")
                 if action == "1":
-                    player.bet_chips(current_high_bet - player.bet)
+                    call_amount = current_high_bet - player.bet
+                    player.bet_chips(call_amount)
                     print(f"{player.name} 跟注了 {current_high_bet} 筹码。")
                 elif action == "2":
-                    if last_raise_amount > 0:
-                        print(f"加注金额必须是 {last_raise_amount} 的倍数。")
-                        raise_amount = int(input(f"请输入加注金额（最少 {last_raise_amount * 2} 筹码）: "))
-                    else:
-                        raise_amount = int(input("请输入加注金额: "))
+                    raise_amount = int(input(f"请输入加注金额（最少 {last_raise_amount * 2} 筹码）: "))
+                    if raise_amount < current_high_bet + last_raise_amount:
+                        print(f"加注金额必须至少为 {current_high_bet + last_raise_amount} 筹码！")
+                        continue
                     player.bet_chips(raise_amount - player.bet)
                     last_raise_amount = raise_amount - current_high_bet
                     current_high_bet = raise_amount
