@@ -3,15 +3,18 @@ from game.player import Player
 
 
 class AIPlayer(Player):
+    """
+    AI 玩家类，继承自 Player
+    """
     def __init__(self, name, chips=1000):
-        """初始化 AI 玩家，继承自 Player 类"""
         super().__init__(name, chips)
+        self.is_ai = True  # 标识该玩家为 AI
 
     def make_decision(self, pot, community_cards):
         """
         AI 玩家决策逻辑：
-        - AI 基于随机选择进行决策
-        - 可以进一步扩展为基于手牌和公共牌的概率计算
+        简单逻辑：
+        - AI 基于随机选择进行决策：跟注、加注或弃牌
         """
         print(f"{self.name} 正在思考...")
         action = random.choice(["call", "raise", "fold"])  # 随机选择动作
@@ -28,3 +31,4 @@ class AIPlayer(Player):
         elif action == "fold":
             # 弃牌
             self.fold()
+            print(f"{self.name} 选择弃牌。")

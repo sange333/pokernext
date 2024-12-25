@@ -33,10 +33,10 @@ def handle_betting_round(players, pot):
             continue
 
         if player.is_ai:
-            # AI 玩家决策
+            # 如果是 AI 玩家，调用 AI 的决策逻辑
             player.make_decision(pot, [])
         else:
-            # 玩家输入操作
+            # 如果是人类玩家，提示进行操作
             print(f"\n{player.name} 的筹码: {player.chips}")
             action = input("请选择操作: [1] 跟注 [2] 加注 [3] 弃牌: ")
             if action == "1":
