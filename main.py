@@ -1,11 +1,11 @@
-from poker_game import PokerGame
+from game.poker_game import PokerGame
 
 def main():
-    print("欢迎来到德州扑克游戏！")
     game = PokerGame()
-    for round in range(10):  # 假设最多玩10轮
-        print(f"--- 第 {round + 1} 轮 ---")
-        game.play_round()
+    for i in range(1, 6):  # 假设进行 5 局游戏
+        print(f"\n===== 第 {i} 局 =====")
+        game.play_game()
+
 
 if __name__ == "__main__":
     main()
