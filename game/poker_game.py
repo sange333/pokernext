@@ -28,7 +28,7 @@ class PokerGame:
 
     def setup_blinds(self):
         """
-        设置小盲和大盲
+        设置小盲和大盲，并返回大盲玩家的下一个行动者索引。
         """
         small_blind_index = (self.dealer_index + 1) % len(self.players)
         big_blind_index = (self.dealer_index + 2) % len(self.players)
@@ -45,6 +45,9 @@ class PokerGame:
 
         # 更新奖池
         self.state.add_to_pot(3)  # 小盲 1 + 大盲 2 = 3 筹码
+
+        # 返回下一个行动者（大盲的下一家）
+        return (big_blind_index + 1) % len(self.players)
 
     def deal_hands(self):
         """
@@ -66,9 +69,10 @@ class PokerGame:
 
     def play_betting_round(self):
         """
-        进行一轮下注
+        进行一轮下注，从大盲的下一家开始行动。
         """
-        pot_addition = handle_betting_round(self.players, self.state.pot)
+        start_index = self.setup_blinds()  # 确定从哪位玩家开始行动
+        pot_addition = handle_betting_round(self.players, self.state.pot, start_index)
         self.state.add_to_pot(pot_addition)
 
     def play_game(self):
@@ -79,7 +83,6 @@ class PokerGame:
         self.deck.reset_deck()  # 每局洗牌
         self.state.reset()  # 重置游戏状态
         self.rotate_dealer()  # 设置庄家
-        self.setup_blinds()  # 强制小盲和大盲下注
 
         # 1. 发手牌
         print("\n发手牌...")
