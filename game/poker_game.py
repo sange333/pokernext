@@ -13,8 +13,8 @@ class PokerGame:
     德州扑克游戏主逻辑
     """
     def __init__(self):
-        # 初始化玩家：1名人类玩家 + 5名AI玩家
-        self.players = [Player("玩家1")] + [AIPlayer(f"AI 玩家 {i+1}") for i in range(5)]
+        # 初始化玩家：5名AI玩家 + 1名人类玩家（人类玩家在最后）
+        self.players = [AIPlayer(f"AI 玩家 {i+1}") for i in range(5)] + [Player("玩家1")]
         self.deck = Deck()  # 扑克牌组
         self.state = GameState(self.players)  # 游戏状态管理
         self.dealer_index = 0  # 庄家的索引
