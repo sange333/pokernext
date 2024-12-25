@@ -3,10 +3,9 @@ def collect_bets(players):
     收集玩家的下注金额，计算总奖池。
     如果玩家弃牌（folded），不参与下注。
     """
-    total_bet = 0
+    total_bet = sum(player.bet for player in players)
     for player in players:
         if not player.folded:
-            total_bet += player.bet
             print(f"{player.name} 下注了 {player.bet} 筹码。")
     return total_bet
 
@@ -75,8 +74,8 @@ def handle_betting_round(players, pot, start_index):
                     player.fold()
                     print(f"{player.name} 弃牌。")
 
-        # 显示当前底池金额
-        pot = sum(player.bet for player in players if not player.folded)
+        # 显示当前底池金额（不减少弃牌玩家已投入的金额）
+        pot = sum(player.bet for player in players)
         print(f"当前底池总额: {pot} 筹码")
 
         # 结束条件：所有玩家已行动一轮，且当前最高下注金额不再有变化
